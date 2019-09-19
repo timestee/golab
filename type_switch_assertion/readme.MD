@@ -20,5 +20,4 @@ PASS
 - if it isn't a pointer or interface, it might need to be copied, which could add overhead - but nothing unusual for value types
 
 > - In real code, type assertion overhead will not show up (unless you're doing it in a loop 100,000 times per request or something)
-> interface{} 
-> - still a little evil.
+> - `interface{} ` still a little evil.
