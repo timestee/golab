@@ -3,8 +3,6 @@ Version:
 
 Result:
 ```shell script
-package math_operation
-
 goos: darwin
 goarch: amd64
 Benchmark_IntAdd-12        	2000000000	         0.26 ns/op
