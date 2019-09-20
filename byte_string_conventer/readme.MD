@@ -15,5 +15,4 @@ Benchmark_ByteStringKeepAlive_Len_10000-12         	2000000000	         0.81 ns/
 Benchmark_ByteStringKeepAliveOff_Len_10000-12      	2000000000	         0.54 ns/op
 ```
 
-> 
-> ['Feature: provide no-copy conversion from []byte to string #25484'](https://github.com/golang/go/issues/25484)
+> [Feature: provide no-copy conversion from []byte to string #25484](https://github.com/golang/go/issues/25484)
