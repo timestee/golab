@@ -37,7 +37,38 @@ func worker(i int, ch chan Work, quit chan struct{}) {
 	}
 }
 
+func selectClosedChan() {
+	closeChan := make(chan struct{})
+	go func() {
+		select {
+		case <- closeChan:
+			fmt.Println("g1 closeChan got")
+			return
+		}
+	}()
+	c := 0
+	for  {
+		select {
+		case <- closeChan:
+			fmt.Println("g2 closeChan got ",c)
+			c++
+			select {
+				case <- closeChan:
+					fmt.Println("g3 closeChan got")
+			}
+			if c >= 2 {
+				return
+			}
+		default:
+			close(closeChan)
+			time.Sleep(1 * time.Second)
+		}
+	}
+}
+
+
 func main() {
+	selectClosedChan()
 	nilTestChan := make(chan struct{})
 	go func() {
 		time.Sleep(1 * time.Second)
