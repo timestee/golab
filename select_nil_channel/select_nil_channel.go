@@ -37,24 +37,46 @@ func worker(i int, ch chan Work, quit chan struct{}) {
 	}
 }
 
+func selectClosedBufferChan() {
+	sendCh := make(chan interface{}, 5)
+	done := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case data, ok := <-sendCh:
+				fmt.Println("selectClosedBufferChan get got ", data, ok)
+				if data == nil || !ok {
+					done <- struct{}{}
+					return
+				}
+			}
+		}
+	}()
+	sendCh <- 1
+	sendCh <- 2
+	sendCh <- 3
+	close(sendCh)
+	<-done
+}
+
 func selectClosedChan() {
 	closeChan := make(chan struct{})
 	go func() {
 		select {
-		case <- closeChan:
+		case <-closeChan:
 			fmt.Println("g1 closeChan got")
 			return
 		}
 	}()
 	c := 0
-	for  {
+	for {
 		select {
-		case <- closeChan:
-			fmt.Println("g2 closeChan got ",c)
+		case <-closeChan:
+			fmt.Println("g2 closeChan got ", c)
 			c++
 			select {
-				case <- closeChan:
-					fmt.Println("g3 closeChan got")
+			case <-closeChan:
+				fmt.Println("g3 closeChan got")
 			}
 			if c >= 2 {
 				return
@@ -66,8 +88,8 @@ func selectClosedChan() {
 	}
 }
 
-
 func main() {
+	selectClosedBufferChan()
 	selectClosedChan()
 	nilTestChan := make(chan struct{})
 	go func() {
