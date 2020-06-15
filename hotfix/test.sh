@@ -1,0 +1,1 @@
+go test  -gcflags=-l
