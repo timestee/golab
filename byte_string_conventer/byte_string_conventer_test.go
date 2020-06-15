@@ -1,13 +1,15 @@
 package byte_string_conventer
 
 import (
+	"bytes"
+	"fmt"
 	"math/rand"
 	"reflect"
 	"runtime"
 	"testing"
 	"time"
+	"unsafe"
 )
-import "unsafe"
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
@@ -112,4 +114,34 @@ func Benchmark_ByteStringKeepAlive_Len_10000(b *testing.B) {
 
 func Benchmark_ByteStringKeepAliveOff_Len_10000(b *testing.B) {
 	byteStringKeepAliveOff([]byte(strTestLen10000), b.N)
+}
+
+// StringToBytes converts string to byte slice without a memory allocation.
+func StringToBytes(s string) (b []byte) {
+	sh := *(*reflect.StringHeader)(unsafe.Pointer(&s))
+	bh := (*reflect.SliceHeader)(unsafe.Pointer(&b))
+	bh.Data, bh.Len, bh.Cap = sh.Data, sh.Len, sh.Len
+	return b
+}
+
+func retTempBytes(input []byte) (b []byte) {
+	a := string(input) + "_"
+	return StringToBytes(a)
+}
+
+func retTempBuffer(b []byte) (buf *bytes.Buffer) {
+	buf = bytes.NewBuffer(b)
+	return buf
+}
+
+func testBuffer() []byte {
+	buf2 := retTempBuffer(retTempBytes([]byte("0123")))
+	fmt.Println(buf2.Bytes())
+	fmt.Println(buf2.Bytes())
+	return buf2.Bytes()
+}
+
+func TestBuffer(t *testing.T) {
+	b := testBuffer()
+	fmt.Println(b)
 }
